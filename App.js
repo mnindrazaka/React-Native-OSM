@@ -6,23 +6,29 @@
 
 import React, { Component } from "react"
 import { View, Text, StyleSheet } from "react-native"
-import MapView, { UrlTile } from "react-native-maps"
-import Spinner from "react-native-loading-spinner-overlay"
+import MapView, { UrlTile, Polyline } from "react-native-maps"
+import Loading from "./src/components/Loading"
 
 export default class App extends Component {
-	constructor(props) {
-		super(props)
-		this.state = {
-			latitude: null,
-			longitude: null,
-			latitudeDelta: null,
-			longitudeDelta: null,
-			error: null,
-		}
+	state = {
+		damaged_road: [],
+		loading: false,
+		loadingText: "",
+		latitude: null,
+		longitude: null,
+		latitudeDelta: null,
+		longitudeDelta: null,
+		error: null
+	}
+
+	componentWillMount() {
+		this.setState({ loading: true, loadingText: "Finding Location..." }, () => {
+			this.watchPosition()
+		})
 	}
 
 	componentDidMount() {
-		this.watchPosition()
+		this.load_damaged_road()
 	}
 
 	watchPosition() {
@@ -31,13 +37,12 @@ export default class App extends Component {
 				let data = this.regionFrom(
 					position.coords.latitude,
 					position.coords.longitude,
-					6,
+					6
 				)
-
-				this.setState({ ...data, error: null })
+				this.setState({ ...data, loading: false, error: null })
 			},
-			error => this.setState({ error: error.message }),
-			{ timeout: 30000, maximumAge: 1000 },
+			error => this.setState({ error: error.message, loading: false }),
+			{ timeout: 30000, maximumAge: 1000 }
 		)
 	}
 
@@ -51,20 +56,28 @@ export default class App extends Component {
 		const longitudeDelta = Math.abs(
 			Math.atan2(
 				Math.sin(angularDistance) * Math.cos(lat),
-				Math.cos(angularDistance) - Math.sin(lat) * Math.sin(lat),
-			),
+				Math.cos(angularDistance) - Math.sin(lat) * Math.sin(lat)
+			)
 		)
 
 		return (result = {
 			latitude: lat,
 			longitude: lon,
 			latitudeDelta,
-			longitudeDelta,
+			longitudeDelta
 		})
 	}
 
 	componentWillUnmount() {
 		navigator.geolocation.clearWatch(this.watchId)
+	}
+
+	load_damaged_road() {
+		fetch("http://192.168.1.6:3000/api/damaged_road")
+			.then(response => response.json())
+			.then(responseJson => {
+				this.setState({ damaged_road: responseJson })
+			})
 	}
 
 	renderMap() {
@@ -77,26 +90,36 @@ export default class App extends Component {
 					latitude: this.state.latitude,
 					longitude: this.state.longitude,
 					latitudeDelta: this.state.latitudeDelta,
-					longitudeDelta: this.state.longitudeDelta,
+					longitudeDelta: this.state.longitudeDelta
 				}}>
-				<UrlTile urlTemplate="http://c.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+				{this.renderPolyline()}
+				<UrlTile
+					urlTemplate="http://c.tile.openstreetmap.org/{z}/{x}/{y}.png"
+					zIndex={-3}
+				/>
 			</MapView>
 		)
+	}
+
+	renderPolyline() {
+		return this.state.damaged_road.map((item, index) => (
+			<Polyline
+				key={index}
+				coordinates={item.coordinates}
+				strokeColor={item.color}
+				strokeWidth={10}
+			/>
+		))
 	}
 
 	render() {
 		console.log(this.state)
 		return (
 			<View style={styles.container}>
-				{this.state.latitude !== null ? (
-					this.renderMap()
+				{this.state.loading ? (
+					<Loading text={this.state.loadingText} />
 				) : (
-					<Spinner
-						visible={true}
-						overlayColor="rgb(0, 131, 235)"
-						textContent={"Finding Current Location..."}
-						textStyle={{ color: "#FFF" }}
-					/>
+					this.renderMap()
 				)}
 			</View>
 		)
@@ -108,6 +131,6 @@ const styles = StyleSheet.create({
 		flex: 1,
 		justifyContent: "center",
 		alignItems: "center",
-		backgroundColor: "#F5FCFF",
-	},
+		backgroundColor: "#F5FCFF"
+	}
 })
