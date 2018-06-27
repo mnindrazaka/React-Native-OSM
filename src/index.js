@@ -1,8 +1,8 @@
 import { createStackNavigator } from "react-navigation"
-import Map from "./scenes/Map"
-import DetailSegment from "./scenes/DetailSegment"
+import ViewRoad from "./scenes/ViewRoad"
+import SegmentDetail from "./scenes/SegmentDetail"
 
 export default createStackNavigator({
-	Map,
-	DetailSegment
+	ViewRoad,
+	SegmentDetail
 })

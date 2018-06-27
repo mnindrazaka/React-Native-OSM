@@ -4,6 +4,7 @@ import AppWithRoute from "./src/index"
 
 export default class App extends Component {
 	render() {
+		console.disableYellowBox = true
 		return (
 			<View style={styles.container}>
 				<AppWithRoute />

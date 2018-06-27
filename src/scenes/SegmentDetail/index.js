@@ -5,7 +5,11 @@ const Form = t.form.Form
 import { webservice } from "../../config/api"
 import axios from "axios"
 
-export default class DetailSegment extends Component {
+export default class SegmentDetail extends Component {
+	static navigationOptions = {
+		title: "Segment Detail"
+	}
+
 	constructor(props) {
 		super(props)
 		const navigation = this.props.navigation
@@ -69,7 +73,7 @@ export default class DetailSegment extends Component {
 			await axios
 				.put(webservice + `/damaged_road/${osm_id}/${sid}`, value)
 				.then(response => response)
-			this.props.navigation.navigate("Map")
+			this.props.navigation.navigate("ViewRoad")
 		}
 	}
 
