@@ -1,8 +1,10 @@
 import { createStackNavigator } from "react-navigation"
 import ViewRoad from "./scenes/ViewRoad"
-import SegmentDetail from "./scenes/SegmentDetail"
+import EditRoad from "./scenes/EditRoad"
+import FormEditSegments from "./scenes/FormEditSegments"
 
 export default createStackNavigator({
 	ViewRoad,
-	SegmentDetail
+	EditRoad,
+	FormEditSegments
 })

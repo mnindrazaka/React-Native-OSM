@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from "react"
-import { StyleSheet, Modal, View } from "react-native"
+import { StyleSheet, Modal, Button } from "react-native"
 import MapView, { Polyline, UrlTile } from "react-native-maps"
 
 import Loading from "../../components/Loading"
@@ -10,9 +10,12 @@ import { webservice } from "../../config/api"
 import axios from "axios"
 
 export default class ViewRoad extends Component {
-	static navigationOptions = {
-		title: "View Road"
-	}
+	static navigationOptions = ({ navigation }) => ({
+		title: "View Road",
+		headerRight: (
+			<Button title="Edit" onPress={() => navigation.navigate("EditRoad")} />
+		)
+	})
 
 	state = {
 		loading: false,
@@ -60,7 +63,6 @@ export default class ViewRoad extends Component {
 				render={coordinate => (
 					<MapView
 						showsUserLocation
-						showsMyLocationButton={true}
 						mapType="none"
 						style={styles.map}
 						initialRegion={{
@@ -103,16 +105,16 @@ export default class ViewRoad extends Component {
 				{this.state.loading ? (
 					<Loading text={"Finding Location..."} s />
 				) : (
-					<Fragment>
-						{this.renderMap()}
-						<Modal
-							visible={this.state.modalVisible}
-							onRequestClose={() => this.setState({ modalVisible: false })}
-							animationType="slide">
-							<SegmentDetail segment={this.state.selected_segment} />
-						</Modal>
-					</Fragment>
+					this.renderMap()
 				)}
+
+				{/* Modal for segment detail */}
+				<Modal
+					visible={this.state.modalVisible}
+					onRequestClose={() => this.setState({ modalVisible: false })}
+					animationType="slide">
+					<SegmentDetail segment={this.state.selected_segment} />
+				</Modal>
 			</Fragment>
 		)
 	}

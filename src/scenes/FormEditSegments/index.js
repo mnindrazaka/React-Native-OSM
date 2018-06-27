@@ -1,13 +1,13 @@
 import React, { Component, Fragment } from "react"
-import { Button, Text } from "react-native"
+import { Button, Text, View, StyleSheet } from "react-native"
 import t from "tcomb-form-native"
 const Form = t.form.Form
 import { webservice } from "../../config/api"
 import axios from "axios"
 
-export default class SegmentDetail extends Component {
+export default class FormEditSegments extends Component {
 	static navigationOptions = {
-		title: "Segment Detail"
+		title: "Form Edit Segments"
 	}
 
 	constructor(props) {
@@ -15,12 +15,7 @@ export default class SegmentDetail extends Component {
 		const navigation = this.props.navigation
 		this.state = {
 			damage_type: [],
-			damage_level: [],
-			value: {
-				information: navigation.getParam("information", ""),
-				damage_type_id: navigation.getParam("damage_type_id", ""),
-				damage_level_id: navigation.getParam("damage_level_id", "")
-			}
+			damage_level: []
 		}
 	}
 
@@ -60,35 +55,33 @@ export default class SegmentDetail extends Component {
 		return t.enums(enumeration)
 	}
 
-	onChange(value) {
-		console.log("form value : ", value)
-		this.setState({ value })
-	}
-
 	async onSubmit() {
 		const value = this.refs.form.getValue()
 		if (value) {
-			const osm_id = this.props.navigation.getParam("osm_id")
-			const sid = this.props.navigation.getParam("sid")
+			const segments = this.props.navigation.getParam("segments")
 			await axios
-				.put(webservice + `/damaged_road/${osm_id}/${sid}`, value)
+				.put(webservice + `/damaged_road`, {
+					segments,
+					value
+				})
 				.then(response => response)
 			this.props.navigation.navigate("ViewRoad")
 		}
 	}
 
 	render() {
-		console.log(this.state)
 		return (
-			<Fragment>
-				<Form
-					ref="form"
-					type={this.createModel()}
-					value={this.state.value}
-					onChange={value => this.onChange(value)}
-				/>
+			<View style={styles.container}>
+				<Form ref="form" type={this.createModel()} />
 				<Button title="Submit" onPress={() => this.onSubmit()} />
-			</Fragment>
+			</View>
 		)
 	}
 }
+
+const styles = StyleSheet.create({
+	container: {
+		backgroundColor: "white",
+		padding: 15
+	}
+})
