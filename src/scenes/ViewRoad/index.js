@@ -1,15 +1,15 @@
 import React, { Component, Fragment } from "react"
 import { StyleSheet, Modal, Button } from "react-native"
-import MapView, { Polyline, UrlTile } from "react-native-maps"
+import { Polyline } from "react-native-maps"
 
-import Loading from "../../components/Loading"
-import MapWrapper from "../../components/MapWrapper"
+import Map from "../../components/Map"
 import SegmentDetail from "./components/SegmentDetail"
 
 import { webservice } from "../../config/api"
 import axios from "axios"
+import { withNavigationFocus } from "react-navigation"
 
-export default class ViewRoad extends Component {
+class ViewRoad extends Component {
 	static navigationOptions = ({ navigation }) => ({
 		title: "View Road",
 		headerRight: (
@@ -18,68 +18,30 @@ export default class ViewRoad extends Component {
 	})
 
 	state = {
-		loading: false,
 		modalVisible: false,
 		damaged_segments: [],
-		selected_segment: {},
-		latitude: null,
-		longitude: null,
-		error: null
+		selected_segment: {}
 	}
 
-	componentWillMount() {
-		this.setState({ loading: true }, () => {
-			this.watchPosition()
-			this.load_damaged_segments()
-		})
+	componentDidMount() {
+		this.loadDamagedSegments()
 	}
 
-	watchPosition() {
-		this.watchId = navigator.geolocation.watchPosition(
-			position => {
-				let { latitude, longitude } = position.coords
-				this.setState({ latitude, longitude, loading: false, error: null })
-			},
-			error => this.setState({ error: error.message, loading: false }),
-			{ timeout: 30000, maximumAge: 1000 }
-		)
-	}
-
-	load_damaged_segments() {
+	loadDamagedSegments() {
 		axios.get(webservice + "/damaged_road").then(response => {
 			this.setState({ damaged_segments: response.data })
 		})
 	}
 
-	componentWillUnmount() {
-		navigator.geolocation.clearWatch(this.watchId)
+	componentDidUpdate(prevProps) {
+		if (this.isScreenFocused(prevProps)) this.loadDamagedSegments()
 	}
 
-	renderMap() {
-		return (
-			<MapWrapper
-				latitude={this.state.latitude}
-				longitude={this.state.longitude}
-				render={coordinate => (
-					<MapView
-						showsUserLocation
-						mapType="none"
-						style={styles.map}
-						initialRegion={{
-							latitude: coordinate.latitude,
-							longitude: coordinate.longitude,
-							latitudeDelta: coordinate.latitudeDelta,
-							longitudeDelta: coordinate.longitudeDelta
-						}}>
-						{this.renderPolyline()}
-						<UrlTile
-							urlTemplate="http://c.tile.openstreetmap.org/{z}/{x}/{y}.png"
-							zIndex={-3}
-						/>
-					</MapView>
-				)}
-			/>
-		)
+	isScreenFocused(prevProps) {
+		const isPreviouslyFocused = prevProps.isFocused
+		const isCurrentFocused = this.props.isFocused
+
+		return isCurrentFocused && !isPreviouslyFocused
 	}
 
 	renderPolyline() {
@@ -88,7 +50,7 @@ export default class ViewRoad extends Component {
 				key={index}
 				coordinates={item.coordinates}
 				strokeColor={item.color}
-				strokeWidth={10}
+				strokeWidth={25}
 				onPress={() => this.showModal(item)}
 			/>
 		))
@@ -98,20 +60,18 @@ export default class ViewRoad extends Component {
 		this.setState({ modalVisible: true, selected_segment })
 	}
 
+	hideModal() {
+		this.setState({ modalVisible: false })
+	}
+
 	render() {
 		return (
 			<Fragment>
-				{/* Show map when loading done */}
-				{this.state.loading ? (
-					<Loading text={"Finding Location..."} s />
-				) : (
-					this.renderMap()
-				)}
+				<Map render={coordinate => this.renderPolyline()} />
 
-				{/* Modal for segment detail */}
 				<Modal
 					visible={this.state.modalVisible}
-					onRequestClose={() => this.setState({ modalVisible: false })}
+					onRequestClose={() => this.hideModal()}
 					animationType="slide">
 					<SegmentDetail segment={this.state.selected_segment} />
 				</Modal>
@@ -120,12 +80,4 @@ export default class ViewRoad extends Component {
 	}
 }
 
-const styles = StyleSheet.create({
-	map: {
-		position: "absolute",
-		top: 0,
-		left: 0,
-		right: 0,
-		bottom: -25
-	}
-})
+export default withNavigationFocus(ViewRoad)
