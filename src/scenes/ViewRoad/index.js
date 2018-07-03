@@ -8,6 +8,7 @@ import SegmentDetail from "./components/SegmentDetail"
 import { webservice } from "../../config/api"
 import axios from "axios"
 import { withNavigationFocus } from "react-navigation"
+import hexRgb from "hex-rgb"
 
 class ViewRoad extends Component {
 	static navigationOptions = ({ navigation }) => ({
@@ -45,15 +46,30 @@ class ViewRoad extends Component {
 	}
 
 	renderPolyline() {
-		return this.state.damaged_segments.map((item, index) => (
-			<Polyline
-				key={index}
-				coordinates={item.coordinates}
-				strokeColor={item.color}
-				strokeWidth={25}
-				onPress={() => this.showModal(item)}
-			/>
-		))
+		return this.state.damaged_segments.map((item, index) => {
+			console.log(item.coordinates)
+			console.log(item.damage_type)
+			return (
+				<Polyline
+					key={index}
+					coordinates={item.coordinates}
+					strokeColor={this.hexToRgba(
+						item.damage_type.color,
+						item.damage_level.alpha
+					)}
+					strokeWidth={7}
+					onPress={() => this.showModal(item)}
+				/>
+			)
+		})
+	}
+
+	hexToRgba(hexColor, alpha) {
+		let color = hexRgb(hexColor, { format: "array" })
+		color[3] = alpha
+
+		const rgbColor = `rgba(${color[0]}, ${color[1]}, ${color[2]}, ${color[3]})`
+		return rgbColor
 	}
 
 	showModal(selected_segment) {
@@ -65,6 +81,7 @@ class ViewRoad extends Component {
 	}
 
 	render() {
+		console.log(this.state.damaged_segments)
 		return (
 			<Fragment>
 				<Map render={coordinate => this.renderPolyline()} />

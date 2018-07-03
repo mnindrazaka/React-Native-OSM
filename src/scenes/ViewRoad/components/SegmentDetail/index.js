@@ -22,10 +22,14 @@ class SegmentDetail extends Component {
 		return (
 			<View style={styles.container}>
 				<Text style={styles.title}>Segment Detail</Text>
-				{this.renderItem("Damage Type", segment.damage_type, "road-variant")}
+				{this.renderItem(
+					"Damage Type",
+					segment.damage_type.name,
+					"road-variant"
+				)}
 				{this.renderItem(
 					"Damage Level",
-					segment.damage_level,
+					segment.damage_level.name,
 					"signal-cellular-2"
 				)}
 				{this.renderItem("Information", segment.information, "information")}

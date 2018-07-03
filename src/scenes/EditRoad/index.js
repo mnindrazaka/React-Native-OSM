@@ -32,16 +32,18 @@ export default class EditRoad extends Component {
 		const segment_color = "rgba(200, 200, 200, 1)"
 		const selected_segment_color = "rgba(0, 0, 0, 0.5)"
 
-		return this.state.segments.map((item, index) => {
-			const selected = this.isSegmentSelected(item)
+		return this.state.segments.map(segment => {
+			const selected = this.isSegmentSelected(segment)
 			return (
 				<Polyline
-					key={index}
-					coordinates={item.coordinates}
+					key={segment.rid}
+					coordinates={segment.coordinates}
 					strokeColor={selected ? selected_segment_color : segment_color}
 					strokeWidth={10}
 					onPress={() =>
-						selected ? this.unselectSegment(item) : this.selectSegment(item)
+						selected
+							? this.unselectSegment(segment)
+							: this.selectSegment(segment)
 					}
 				/>
 			)
