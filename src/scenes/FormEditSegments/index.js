@@ -60,7 +60,7 @@ export default class FormEditSegments extends Component {
 		if (value) {
 			const segments = this.props.navigation.getParam("segments")
 			await axios
-				.put(webservice + `/damaged_road`, {
+				.post(webservice + `/damaged_road`, {
 					segments,
 					value
 				})

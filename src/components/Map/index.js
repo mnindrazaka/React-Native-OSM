@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from "react"
-import { StyleSheet } from "react-native"
+import { StyleSheet, View } from "react-native"
 import MapWrapper from "../MapWrapper"
-import MapView, { UrlTile } from "react-native-maps"
+import MapView, { UrlTile, Marker } from "react-native-maps"
 import Loading from "../Loading"
 
 export default class Map extends Component {
@@ -43,6 +43,10 @@ export default class Map extends Component {
 	setPosition(position) {
 		const { latitude, longitude } = position.coords
 		this.setState({ latitude, longitude, loading: false, error: null })
+
+		if (this.props.onPositionChange !== null) {
+			this.props.onPositionChange(position.coords)
+		}
 	}
 
 	onPositionError(error) {
@@ -60,7 +64,7 @@ export default class Map extends Component {
 				longitude={this.state.longitude}
 				render={coordinate => (
 					<MapView
-						showsUserLocation
+						zoomEnabled={false}
 						mapType="none"
 						style={styles.map}
 						initialRegion={{
@@ -70,6 +74,17 @@ export default class Map extends Component {
 							longitudeDelta: coordinate.longitudeDelta
 						}}>
 						<UrlTile urlTemplate={this.templateURL} zIndex={-3} />
+
+						<Marker
+							coordinate={{
+								latitude: this.state.latitude,
+								longitude: this.state.longitude
+							}}>
+							<View style={styles.markerOutline}>
+								<View style={styles.marker} />
+							</View>
+						</Marker>
+
 						{this.props.render(coordinate)}
 					</MapView>
 				)}
@@ -94,5 +109,19 @@ export default class Map extends Component {
 const styles = StyleSheet.create({
 	map: {
 		flex: 6
+	},
+	markerOutline: {
+		backgroundColor: "white",
+		borderRadius: 50,
+		height: 25,
+		width: 25,
+		justifyContent: "center",
+		alignItems: "center"
+	},
+	marker: {
+		backgroundColor: "#0089CC",
+		borderRadius: 50,
+		height: 20,
+		width: 20
 	}
 })

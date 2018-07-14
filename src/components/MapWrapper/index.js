@@ -18,7 +18,7 @@ export default class MapWrapper extends Component {
 		const coordinate = this.regionFrom(
 			this.props.latitude,
 			this.props.longitude,
-			6
+			4
 		)
 		this.setState({ coordinate })
 	}

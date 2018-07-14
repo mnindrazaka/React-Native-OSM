@@ -7,17 +7,23 @@ class SelectedSegments extends Component {
 		return (
 			<View style={styles.container}>
 				<TouchableOpacity onPress={() => this.props.onClearButtonPress()}>
-					<Icon
-						name={"close-circle"}
-						size={30}
-						color={"#EF3C49"}
-						style={styles.icon}
-					/>
+					<Icon name={"close-circle"} size={30} color={"#EF3C49"} />
 				</TouchableOpacity>
+
 				<View style={styles.data}>
-					<Icon name={"road-variant"} size={30} />
-					<Text style={styles.num}>{this.props.count + " Selected"}</Text>
+					<View style={styles.dataRow}>
+						<Icon name={"road-variant"} size={25} style={styles.icon} />
+						<Text style={styles.num}>{this.props.count + " Selected"}</Text>
+					</View>
+
+					<View style={styles.dataRow}>
+						<Icon name={"arrow-expand"} size={25} style={styles.icon} />
+						<Text style={styles.num}>
+							{this.props.segmentLength.toFixed(1) + " Meter"}
+						</Text>
+					</View>
 				</View>
+
 				<Button title="Edit" onPress={() => this.props.onSubmitButtonPress()} />
 			</View>
 		)
@@ -34,6 +40,10 @@ const styles = StyleSheet.create({
 		padding: 15
 	},
 	data: {
+		flexDirection: "column"
+	},
+	dataRow: {
+		flex: 1,
 		flexDirection: "row"
 	},
 	num: {
