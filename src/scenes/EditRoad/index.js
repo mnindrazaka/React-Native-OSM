@@ -28,10 +28,7 @@ export default class EditRoad extends Component {
 
 	async updateCoordinate(coordinate) {
 		const distance = this.getDistance(coordinate)
-		console.log("distance from start : " + distance)
-
 		if (this.state.latitude === null || distance > 50) {
-			console.log("load segment again")
 			await this.setCoordinate(coordinate)
 			this.loadSegments()
 			this.clearSelectedSegment()

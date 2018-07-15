@@ -9,6 +9,7 @@ import { webservice } from "../../config/api"
 import axios from "axios"
 import { withNavigationFocus } from "react-navigation"
 import hexRgb from "hex-rgb"
+import geodist from "geodist"
 
 class ViewRoad extends Component {
 	static navigationOptions = ({ navigation }) => ({
@@ -21,17 +22,56 @@ class ViewRoad extends Component {
 	state = {
 		modalVisible: false,
 		damaged_segments: [],
-		selected_segment: {}
+		selected_segment: {},
+		latitude: null,
+		longitude: null
 	}
 
-	componentDidMount() {
-		this.loadDamagedSegments()
+	async updateCoordinate(coordinate) {
+		const distance = this.getDistance(coordinate)
+
+		if (this.state.latitude === null || distance > 50) {
+			await this.setCoordinate(coordinate)
+			this.loadDamagedSegments()
+		}
+	}
+
+	getDistance(currentCoordinate) {
+		const {
+			latitude: curr_latitude,
+			longitude: curr_longitude
+		} = currentCoordinate
+
+		const { latitude: prev_latitude, longitude: prev_longitude } = this.state
+
+		return geodist(
+			{
+				lat: curr_latitude,
+				lon: curr_longitude
+			},
+			{
+				lat: prev_latitude,
+				lon: prev_longitude
+			},
+			{
+				unit: "meters"
+			}
+		)
+	}
+
+	setCoordinate(coordinate) {
+		this.setState({
+			...coordinate
+		})
 	}
 
 	loadDamagedSegments() {
-		axios.get(webservice + "/damaged_road").then(response => {
-			this.setState({ damaged_segments: response.data })
-		})
+		const { latitude, longitude } = this.state
+		axios
+			.get(webservice + "/damaged_road/" + latitude + "/" + longitude)
+			.then(response => {
+				this.setState({ damaged_segments: response.data })
+			})
 	}
 
 	componentDidUpdate(prevProps) {
@@ -47,8 +87,6 @@ class ViewRoad extends Component {
 
 	renderPolyline() {
 		return this.state.damaged_segments.map((item, index) => {
-			console.log(item.coordinates)
-			console.log(item.damage_type)
 			return (
 				<Polyline
 					key={index}
@@ -57,7 +95,7 @@ class ViewRoad extends Component {
 						item.damage_type.color,
 						item.damage_level.alpha
 					)}
-					strokeWidth={7}
+					strokeWidth={15}
 					onPress={() => this.showModal(item)}
 				/>
 			)
@@ -81,10 +119,12 @@ class ViewRoad extends Component {
 	}
 
 	render() {
-		console.log(this.state.damaged_segments)
 		return (
 			<Fragment>
-				<Map render={coordinate => this.renderPolyline()} />
+				<Map
+					onPositionChange={coordinate => this.updateCoordinate(coordinate)}
+					render={coordinate => this.renderPolyline()}
+				/>
 
 				<Modal
 					visible={this.state.modalVisible}
