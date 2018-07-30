@@ -1,15 +1,15 @@
-import React, { Component } from "react"
-import Spinner from "react-native-loading-spinner-overlay"
+import React, { Component } from 'react'
+import { Text } from 'react-native'
+import Spinner from 'react-native-loading-spinner-overlay'
 
 export default class Loading extends Component {
 	render() {
-		return (
-			<Spinner
-				visible={this.props.visible}
-				overlayColor="rgb(0, 131, 235)"
-				textContent={this.props.text}
-				textStyle={{ color: "#FFF" }}
-			/>
-		)
+		return this.props.visible ? <Text>Loading...</Text> : null
+		// <Spinner
+		// 	visible={this.props.visible}
+		// 	overlayColor="rgb(0, 131, 235)"
+		// 	textContent={this.props.text}
+		// 	textStyle={{ color: "#FFF" }}
+		// />
 	}
 }

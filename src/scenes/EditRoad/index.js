@@ -1,17 +1,17 @@
-import React, { Component, Fragment } from "react"
-import { StyleSheet, Text, View } from "react-native"
-import { Polyline } from "react-native-maps"
+import React, { Component, Fragment } from 'react'
+import { StyleSheet, Text, View } from 'react-native'
 
-import Map from "../../components/Map"
-import SelectedSegments from "./components/SelectedSegments"
+import Map from '../../components/Map'
+import Polylines from './components/Polylines'
+import SelectedSegments from './components/SelectedSegments'
 
-import { webservice } from "../../config/api"
-import axios from "axios"
-import geodist from "geodist"
+import { webservice } from '../../config/api'
+import axios from 'axios'
+import geodist from 'geodist'
 
 export default class EditRoad extends Component {
 	static navigationOptions = {
-		title: "Edit Road"
+		title: 'Edit Road'
 	}
 
 	state = {
@@ -21,17 +21,12 @@ export default class EditRoad extends Component {
 		longitude: null
 	}
 
-	segmentColor = {
-		default: "rgba(200, 200, 200, 0.7)",
-		selected: "rgba(0, 0, 0, 0.5)"
-	}
-
 	async updateCoordinate(coordinate) {
 		const distance = this.getDistance(coordinate)
 		if (this.state.latitude === null || distance > 50) {
 			await this.setCoordinate(coordinate)
 			this.loadSegments()
-			this.clearSelectedSegment()
+			this.updateSelectedSegments([])
 		}
 	}
 
@@ -53,7 +48,7 @@ export default class EditRoad extends Component {
 				lon: prev_longitude
 			},
 			{
-				unit: "meters"
+				unit: 'meters'
 			}
 		)
 	}
@@ -67,70 +62,28 @@ export default class EditRoad extends Component {
 	loadSegments() {
 		const { latitude, longitude } = this.state
 		axios
-			.get(webservice + "/road_segment/" + latitude + "/" + longitude)
+			.get(webservice + '/road_segment/' + latitude + '/' + longitude)
 			.then(response => {
 				this.setState({ segments: response.data })
 			})
 	}
 
-	renderPolyline() {
-		return this.state.segments.map((segment, index) => {
-			const selected = this.isSegmentSelected(segment)
-			return (
-				<Polyline
-					key={index}
-					coordinates={segment.coordinates}
-					strokeColor={
-						selected ? this.segmentColor.selected : this.segmentColor.default
-					}
-					strokeWidth={15}
-					onPress={() =>
-						selected
-							? this.unselectSegment(segment)
-							: this.selectSegment(segment)
-					}
-				/>
-			)
+	updateSelectedSegments(segments) {
+		this.setState({
+			selected_segments: segments
 		})
-	}
-
-	isSegmentSelected(segment) {
-		let selected = false
-		this.state.selected_segments.forEach(item => {
-			if (item.osm_id === segment.osm_id && item.sid === segment.sid) {
-				selected = true
-			}
-		})
-		return selected
-	}
-
-	selectSegment(segment) {
-		let selected_segments = this.state.selected_segments
-		selected_segments.push(segment)
-		this.setState({ selected_segments })
-	}
-
-	unselectSegment(segment) {
-		let selected_segments = this.state.selected_segments.filter(item => {
-			return item.osm_id !== segment.osm_id || item.sid !== segment.sid
-		})
-		this.setState({ selected_segments })
-	}
-
-	clearSelectedSegment() {
-		this.setState({ selected_segments: [] })
 	}
 
 	selectedSegmentLength() {
 		let length = 0
 		this.state.selected_segments.forEach(function(segment) {
-			length += segment["length"]
+			length += segment['length']
 		})
 		return length
 	}
 
 	navigateToForm() {
-		this.props.navigation.navigate("FormEditSegments", {
+		this.props.navigation.navigate('FormEditSegments', {
 			segments: this.state.selected_segments
 		})
 	}
@@ -140,9 +93,15 @@ export default class EditRoad extends Component {
 			<Fragment>
 				<Map
 					style={styles.map}
-					onPositionChange={coordinate => this.updateCoordinate(coordinate)}
-					render={coordinate => this.renderPolyline()}
-				/>
+					onPositionChange={coordinate => this.updateCoordinate(coordinate)}>
+					<Polylines
+						segments={this.state.segments}
+						selected_segments={this.state.selected_segments}
+						onSelectedSegmentsChange={segments =>
+							this.updateSelectedSegments(segments)
+						}
+					/>
+				</Map>
 
 				<SelectedSegments
 					onSubmitButtonPress={() => this.navigateToForm()}

@@ -1,21 +1,20 @@
-import React, { Component, Fragment } from "react"
-import { StyleSheet, Modal, Button } from "react-native"
-import { Polyline } from "react-native-maps"
+import React, { Component, Fragment } from 'react'
+import { Modal, Button } from 'react-native'
 
-import Map from "../../components/Map"
-import SegmentDetail from "./components/SegmentDetail"
+import Map from '../../components/Map'
+import Polylines from './components/Polylines'
+import SegmentDetail from './components/SegmentDetail'
 
-import { webservice } from "../../config/api"
-import axios from "axios"
-import { withNavigationFocus } from "react-navigation"
-import hexRgb from "hex-rgb"
-import geodist from "geodist"
+import { webservice } from '../../config/api'
+import axios from 'axios'
+import { withNavigationFocus } from 'react-navigation'
+import geodist from 'geodist'
 
 class ViewRoad extends Component {
 	static navigationOptions = ({ navigation }) => ({
-		title: "View Road",
+		title: 'View Road',
 		headerRight: (
-			<Button title="Edit" onPress={() => navigation.navigate("EditRoad")} />
+			<Button title="Edit" onPress={() => navigation.navigate('EditRoad')} />
 		)
 	})
 
@@ -27,16 +26,16 @@ class ViewRoad extends Component {
 		longitude: null
 	}
 
-	async updateCoordinate(coordinate) {
-		const distance = this.getDistance(coordinate)
+	async updateCoordinate(current_coordinate) {
+		const distance = this.getDistanceFrom(current_coordinate)
 
 		if (this.state.latitude === null || distance > 50) {
-			await this.setCoordinate(coordinate)
+			await this.setCoordinate(current_coordinate)
 			this.loadDamagedSegments()
 		}
 	}
 
-	getDistance(currentCoordinate) {
+	getDistanceFrom(currentCoordinate) {
 		const {
 			latitude: curr_latitude,
 			longitude: curr_longitude
@@ -54,7 +53,7 @@ class ViewRoad extends Component {
 				lon: prev_longitude
 			},
 			{
-				unit: "meters"
+				unit: 'meters'
 			}
 		)
 	}
@@ -68,7 +67,7 @@ class ViewRoad extends Component {
 	loadDamagedSegments() {
 		const { latitude, longitude } = this.state
 		axios
-			.get(webservice + "/damaged_road/" + latitude + "/" + longitude)
+			.get(webservice + '/damaged_road/' + latitude + '/' + longitude)
 			.then(response => {
 				this.setState({ damaged_segments: response.data })
 			})
@@ -85,31 +84,6 @@ class ViewRoad extends Component {
 		return isCurrentFocused && !isPreviouslyFocused
 	}
 
-	renderPolyline() {
-		return this.state.damaged_segments.map((item, index) => {
-			return (
-				<Polyline
-					key={index}
-					coordinates={item.coordinates}
-					strokeColor={this.hexToRgba(
-						item.damage_type.color,
-						item.damage_level.alpha
-					)}
-					strokeWidth={15}
-					onPress={() => this.showModal(item)}
-				/>
-			)
-		})
-	}
-
-	hexToRgba(hexColor, alpha) {
-		let color = hexRgb(hexColor, { format: "array" })
-		color[3] = alpha
-
-		const rgbColor = `rgba(${color[0]}, ${color[1]}, ${color[2]}, ${color[3]})`
-		return rgbColor
-	}
-
 	showModal(selected_segment) {
 		this.setState({ modalVisible: true, selected_segment })
 	}
@@ -121,10 +95,12 @@ class ViewRoad extends Component {
 	render() {
 		return (
 			<Fragment>
-				<Map
-					onPositionChange={coordinate => this.updateCoordinate(coordinate)}
-					render={coordinate => this.renderPolyline()}
-				/>
+				<Map onPositionChange={coordinate => this.updateCoordinate(coordinate)}>
+					<Polylines
+						damaged_segments={this.state.damaged_segments}
+						onPress={segment => this.showModal(segment)}
+					/>
+				</Map>
 
 				<Modal
 					visible={this.state.modalVisible}

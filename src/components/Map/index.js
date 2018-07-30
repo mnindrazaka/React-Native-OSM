@@ -1,8 +1,8 @@
-import React, { Component, Fragment } from "react"
-import { StyleSheet, View } from "react-native"
-import MapWrapper from "../MapWrapper"
-import MapView, { UrlTile, Marker } from "react-native-maps"
-import Loading from "../Loading"
+import React, { Component, Fragment } from 'react'
+import { StyleSheet, View } from 'react-native'
+import MapWrapper from '../MapWrapper'
+import MapView, { UrlTile, Marker } from 'react-native-maps'
+import Loading from '../Loading'
 
 export default class Map extends Component {
 	state = {
@@ -17,7 +17,7 @@ export default class Map extends Component {
 		maximumAge: 1000
 	}
 
-	templateURL = "http://c.tile.openstreetmap.org/{z}/{x}/{y}.png"
+	templateURL = 'http://c.tile.openstreetmap.org/{z}/{x}/{y}.png'
 
 	componentWillMount() {
 		this.loading()
@@ -85,7 +85,7 @@ export default class Map extends Component {
 							</View>
 						</Marker>
 
-						{this.props.render(coordinate)}
+						{this.props.children}
 					</MapView>
 				)}
 			/>
@@ -111,15 +111,15 @@ const styles = StyleSheet.create({
 		flex: 6
 	},
 	markerOutline: {
-		backgroundColor: "white",
+		backgroundColor: 'white',
 		borderRadius: 50,
 		height: 25,
 		width: 25,
-		justifyContent: "center",
-		alignItems: "center"
+		justifyContent: 'center',
+		alignItems: 'center'
 	},
 	marker: {
-		backgroundColor: "#0089CC",
+		backgroundColor: '#0089CC',
 		borderRadius: 50,
 		height: 20,
 		width: 20
