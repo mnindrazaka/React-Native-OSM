@@ -1,6 +1,7 @@
 import React, { Component, Fragment } from 'react'
 import { Polyline } from 'react-native-maps'
 import hexRgb from 'hex-rgb'
+import PropTypes from 'prop-types'
 
 class Polylines extends Component {
 	renderPolyline() {
@@ -30,6 +31,11 @@ class Polylines extends Component {
 	render() {
 		return <Fragment>{this.renderPolyline()}</Fragment>
 	}
+}
+
+Polylines.propTypes = {
+	damaged_segments: PropTypes.array.isRequired,
+	onPress: PropTypes.func.isRequired
 }
 
 export default Polylines

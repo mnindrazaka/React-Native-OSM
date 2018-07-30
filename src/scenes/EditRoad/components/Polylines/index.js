@@ -1,5 +1,6 @@
 import React, { Component, Fragment } from 'react'
 import { Polyline } from 'react-native-maps'
+import PropTypes from 'prop-types'
 
 class Polylines extends Component {
 	segmentColor = {
@@ -62,6 +63,12 @@ class Polylines extends Component {
 	render() {
 		return <Fragment>{this.renderPolyline()}</Fragment>
 	}
+}
+
+Polylines.propTypes = {
+	segments: PropTypes.array.isRequired,
+	selected_segments: PropTypes.array.isRequired,
+	onSelectedSegmentsChange: PropTypes.func.isRequired
 }
 
 export default Polylines

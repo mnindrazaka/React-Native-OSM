@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { Text } from 'react-native'
+import PropTypes from 'prop-types'
 import Spinner from 'react-native-loading-spinner-overlay'
 
 export default class Loading extends Component {
@@ -12,4 +13,8 @@ export default class Loading extends Component {
 		// 	textStyle={{ color: "#FFF" }}
 		// />
 	}
+}
+
+Loading.propTypes = {
+	visible: PropTypes.bool.isRequired
 }

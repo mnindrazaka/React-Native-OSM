@@ -1,4 +1,5 @@
-import React, { Component, Fragment } from "react"
+import React, { Component, Fragment } from 'react'
+import PropTypes from 'prop-types'
 
 export default class MapWrapper extends Component {
 	state = {
@@ -48,4 +49,9 @@ export default class MapWrapper extends Component {
 	render() {
 		return <Fragment>{this.props.render(this.state.coordinate)}</Fragment>
 	}
+}
+
+MapWrapper.propTypes = {
+	latitude: PropTypes.number.isRequired,
+	longitude: PropTypes.number.isRequired
 }

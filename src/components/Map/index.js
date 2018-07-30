@@ -3,6 +3,7 @@ import { StyleSheet, View } from 'react-native'
 import MapWrapper from '../MapWrapper'
 import MapView, { UrlTile, Marker } from 'react-native-maps'
 import Loading from '../Loading'
+import PropTypes from 'prop-types'
 
 export default class Map extends Component {
 	state = {
@@ -104,6 +105,10 @@ export default class Map extends Component {
 	render() {
 		return this.renderMapWhenLoadingComplete()
 	}
+}
+
+Map.propTypes = {
+	onPositionChange: PropTypes.func
 }
 
 const styles = StyleSheet.create({
