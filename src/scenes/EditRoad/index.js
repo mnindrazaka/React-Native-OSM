@@ -1,13 +1,13 @@
 import React, { Component, Fragment } from 'react'
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet } from 'react-native'
 
 import Map from '../../components/Map'
 import Polylines from './components/Polylines'
 import SelectedSegments from './components/SelectedSegments'
 
 import { webservice } from '../../config/api'
+import { getDistanceFrom } from '../../utility/distance'
 import axios from 'axios'
-import geodist from 'geodist'
 
 export default class EditRoad extends Component {
 	static navigationOptions = {
@@ -21,36 +21,13 @@ export default class EditRoad extends Component {
 		longitude: null
 	}
 
-	async updateCoordinate(coordinate) {
-		const distance = this.getDistance(coordinate)
+	async updateCoordinate(current_coordinate) {
+		const distance = getDistanceFrom(current_coordinate, this.state)
 		if (this.state.latitude === null || distance > 50) {
-			await this.setCoordinate(coordinate)
+			await this.setCoordinate(current_coordinate)
 			this.loadSegments()
 			this.updateSelectedSegments([])
 		}
-	}
-
-	getDistance(currentCoordinate) {
-		const {
-			latitude: curr_latitude,
-			longitude: curr_longitude
-		} = currentCoordinate
-
-		const { latitude: prev_latitude, longitude: prev_longitude } = this.state
-
-		return geodist(
-			{
-				lat: curr_latitude,
-				lon: curr_longitude
-			},
-			{
-				lat: prev_latitude,
-				lon: prev_longitude
-			},
-			{
-				unit: 'meters'
-			}
-		)
 	}
 
 	setCoordinate(coordinate) {

@@ -7,8 +7,8 @@ import SegmentDetail from './components/SegmentDetail'
 
 import { webservice } from '../../config/api'
 import axios from 'axios'
+import { getDistanceFrom } from '../../utility/distance'
 import { withNavigationFocus } from 'react-navigation'
-import geodist from 'geodist'
 
 class ViewRoad extends Component {
 	static navigationOptions = ({ navigation }) => ({
@@ -27,35 +27,12 @@ class ViewRoad extends Component {
 	}
 
 	async updateCoordinate(current_coordinate) {
-		const distance = this.getDistanceFrom(current_coordinate)
+		const distance = getDistanceFrom(current_coordinate, this.state)
 
 		if (this.state.latitude === null || distance > 50) {
 			await this.setCoordinate(current_coordinate)
 			this.loadDamagedSegments()
 		}
-	}
-
-	getDistanceFrom(currentCoordinate) {
-		const {
-			latitude: curr_latitude,
-			longitude: curr_longitude
-		} = currentCoordinate
-
-		const { latitude: prev_latitude, longitude: prev_longitude } = this.state
-
-		return geodist(
-			{
-				lat: curr_latitude,
-				lon: curr_longitude
-			},
-			{
-				lat: prev_latitude,
-				lon: prev_longitude
-			},
-			{
-				unit: 'meters'
-			}
-		)
 	}
 
 	setCoordinate(coordinate) {

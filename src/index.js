@@ -4,7 +4,7 @@ import EditRoad from './scenes/EditRoad'
 import FormEditSegments from './scenes/FormEditSegments'
 
 export default createStackNavigator({
-	EditRoad,
 	ViewRoad,
+	EditRoad,
 	FormEditSegments
 })

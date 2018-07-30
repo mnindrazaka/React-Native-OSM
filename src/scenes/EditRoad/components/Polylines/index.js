@@ -9,17 +9,17 @@ class Polylines extends Component {
 
 	renderPolyline() {
 		return this.props.segments.map((segment, index) => {
-			const selected = this.isSegmentSelected(segment)
+			const isSelected = this.isSegmentSelected(segment)
 			return (
 				<Polyline
 					key={index}
 					coordinates={segment.coordinates}
 					strokeColor={
-						selected ? this.segmentColor.selected : this.segmentColor.default
+						isSelected ? this.segmentColor.selected : this.segmentColor.default
 					}
 					strokeWidth={15}
 					onPress={() =>
-						selected
+						isSelected
 							? this.unselectSegment(segment)
 							: this.selectSegment(segment)
 					}
