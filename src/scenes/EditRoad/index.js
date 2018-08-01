@@ -9,6 +9,8 @@ import { webservice } from '../../config/api'
 import { getDistanceFrom } from '../../utility/distance'
 import axios from 'axios'
 
+import Context from '../../../context'
+
 export default class EditRoad extends Component {
 	static navigationOptions = {
 		title: 'Edit Road'
@@ -67,27 +69,36 @@ export default class EditRoad extends Component {
 
 	render() {
 		return (
-			<Fragment>
-				<Map
-					style={styles.map}
-					onPositionChange={coordinate => this.updateCoordinate(coordinate)}>
-					<Polylines
-						segments={this.state.segments}
-						selected_segments={this.state.selected_segments}
-						onSelectedSegmentsChange={segments =>
-							this.updateSelectedSegments(segments)
-						}
-					/>
-				</Map>
+			<Context.Consumer>
+				{({ latitude, longitude }) => {
+					this.updateCoordinate({ latitude, longitude })
+					return (
+						<Fragment>
+							<Map
+								style={styles.map}
+								onPositionChange={coordinate =>
+									this.updateCoordinate(coordinate)
+								}>
+								<Polylines
+									segments={this.state.segments}
+									selected_segments={this.state.selected_segments}
+									onSelectedSegmentsChange={segments =>
+										this.updateSelectedSegments(segments)
+									}
+								/>
+							</Map>
 
-				<SelectedSegments
-					onSubmitButtonPress={() => this.navigateToForm()}
-					onClearButtonPress={() => this.clearSelectedSegment()}
-					style={styles.selectedSements}
-					count={this.state.selected_segments.length}
-					segmentLength={this.selectedSegmentLength()}
-				/>
-			</Fragment>
+							<SelectedSegments
+								onSubmitButtonPress={() => this.navigateToForm()}
+								onClearButtonPress={() => this.clearSelectedSegment()}
+								style={styles.selectedSements}
+								count={this.state.selected_segments.length}
+								segmentLength={this.selectedSegmentLength()}
+							/>
+						</Fragment>
+					)
+				}}
+			</Context.Consumer>
 		)
 	}
 }

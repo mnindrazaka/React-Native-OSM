@@ -10,6 +10,8 @@ import axios from 'axios'
 import { getDistanceFrom } from '../../utility/distance'
 import { withNavigationFocus } from 'react-navigation'
 
+import Context from '../../../context'
+
 class ViewRoad extends Component {
 	static navigationOptions = ({ navigation }) => ({
 		title: 'View Road',
@@ -71,21 +73,28 @@ class ViewRoad extends Component {
 
 	render() {
 		return (
-			<Fragment>
-				<Map onPositionChange={coordinate => this.updateCoordinate(coordinate)}>
-					<Polylines
-						damaged_segments={this.state.damaged_segments}
-						onPress={segment => this.showModal(segment)}
-					/>
-				</Map>
+			<Context.Consumer>
+				{({ latitude, longitude }) => {
+					this.updateCoordinate({ latitude, longitude })
+					return (
+						<Fragment>
+							<Map>
+								<Polylines
+									damaged_segments={this.state.damaged_segments}
+									onPress={segment => this.showModal(segment)}
+								/>
+							</Map>
 
-				<Modal
-					visible={this.state.modalVisible}
-					onRequestClose={() => this.hideModal()}
-					animationType="slide">
-					<SegmentDetail segment={this.state.selected_segment} />
-				</Modal>
-			</Fragment>
+							<Modal
+								visible={this.state.modalVisible}
+								onRequestClose={() => this.hideModal()}
+								animationType="slide">
+								<SegmentDetail segment={this.state.selected_segment} />
+							</Modal>
+						</Fragment>
+					)
+				}}
+			</Context.Consumer>
 		)
 	}
 }
