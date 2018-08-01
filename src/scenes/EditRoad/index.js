@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react'
-import { StyleSheet } from 'react-native'
+import styles from './styles'
 
 import Map from '../../components/Map'
 import Polylines from './components/Polylines'
@@ -9,7 +9,7 @@ import { webservice } from '../../config/api'
 import { getDistanceFrom } from '../../utility/distance'
 import axios from 'axios'
 
-import Context from '../../../context'
+import Context from '../../context'
 
 export default class EditRoad extends Component {
 	static navigationOptions = {
@@ -102,15 +102,3 @@ export default class EditRoad extends Component {
 		)
 	}
 }
-
-const styles = StyleSheet.create({
-	container: {
-		flex: 1
-	},
-	map: {
-		flex: 6
-	},
-	selectedSements: {
-		flex: 1
-	}
-})

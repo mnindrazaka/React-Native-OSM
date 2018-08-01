@@ -1,13 +1,14 @@
-import React, { Component, Fragment } from "react"
-import { Button, Text, View, StyleSheet } from "react-native"
-import t from "tcomb-form-native"
+import React, { Component } from 'react'
+import { Button, View } from 'react-native'
+import styles from './styles'
+import t from 'tcomb-form-native'
 const Form = t.form.Form
-import { webservice } from "../../config/api"
-import axios from "axios"
+import { webservice } from '../../config/api'
+import axios from 'axios'
 
 export default class FormEditSegments extends Component {
 	static navigationOptions = {
-		title: "Form Edit Segments"
+		title: 'Form Edit Segments'
 	}
 
 	constructor(props) {
@@ -24,11 +25,11 @@ export default class FormEditSegments extends Component {
 	}
 
 	async getDamageData() {
-		const damage_type = await fetch(webservice + "/damage_type")
+		const damage_type = await fetch(webservice + '/damage_type')
 			.then(response => response.json())
 			.then(responseJson => responseJson)
 
-		const damage_level = await fetch(webservice + "/damage_level")
+		const damage_level = await fetch(webservice + '/damage_level')
 			.then(response => response.json())
 			.then(responseJson => responseJson)
 
@@ -58,14 +59,14 @@ export default class FormEditSegments extends Component {
 	async onSubmit() {
 		const value = this.refs.form.getValue()
 		if (value) {
-			const segments = this.props.navigation.getParam("segments")
+			const segments = this.props.navigation.getParam('segments')
 			await axios
 				.post(webservice + `/damaged_road`, {
 					segments,
 					value
 				})
 				.then(response => response)
-			this.props.navigation.navigate("ViewRoad")
+			this.props.navigation.navigate('ViewRoad')
 		}
 	}
 
@@ -78,10 +79,3 @@ export default class FormEditSegments extends Component {
 		)
 	}
 }
-
-const styles = StyleSheet.create({
-	container: {
-		backgroundColor: "white",
-		padding: 15
-	}
-})

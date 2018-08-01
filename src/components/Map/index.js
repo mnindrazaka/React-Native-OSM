@@ -1,8 +1,9 @@
 import React, { Component, Fragment } from 'react'
-import { StyleSheet, View } from 'react-native'
+import { View } from 'react-native'
+import styles from './styles'
 import MapWrapper from '../MapWrapper'
 import MapView, { UrlTile, Marker } from 'react-native-maps'
-import Context from '../../../context'
+import Context from '../../context'
 
 export default class Map extends Component {
 	templateURL = 'http://c.tile.openstreetmap.org/{z}/{x}/{y}.png'
@@ -50,23 +51,3 @@ export default class Map extends Component {
 		)
 	}
 }
-
-const styles = StyleSheet.create({
-	map: {
-		flex: 6
-	},
-	markerOutline: {
-		backgroundColor: 'white',
-		borderRadius: 50,
-		height: 25,
-		width: 25,
-		justifyContent: 'center',
-		alignItems: 'center'
-	},
-	marker: {
-		backgroundColor: '#0089CC',
-		borderRadius: 50,
-		height: 20,
-		width: 20
-	}
-})

@@ -10,7 +10,7 @@ import axios from 'axios'
 import { getDistanceFrom } from '../../utility/distance'
 import { withNavigationFocus } from 'react-navigation'
 
-import Context from '../../../context'
+import Context from '../../context'
 
 class ViewRoad extends Component {
 	static navigationOptions = ({ navigation }) => ({
